@@ -34,7 +34,16 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
+    implementation libs.navigation.fragment
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.okhttp
+    //noinspection UseTomlInstead
+    implementation 'androidx.navigation:navigation-fragment:2.8.9'
+    implementation 'androidx.navigation:navigation-ui:2.8.9'
+    implementation libs.material.v150  // o la última versión disponible
+
 }

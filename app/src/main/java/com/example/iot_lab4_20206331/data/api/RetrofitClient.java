@@ -4,15 +4,22 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static Retrofit retrofit = null;
 
-    public static Retrofit getClient() {
+    private static Retrofit retrofit;
+    private static final String BASE_URL = "https://api.weatherapi.com/v1/";  // URL base de la API
+
+    public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.weatherapi.com/") // Base URL de la API
-                    .addConverterFactory(GsonConverterFactory.create()) // Convierte la respuesta JSON en objetos Java
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())  // Usamos Gson para convertir el JSON
                     .build();
         }
         return retrofit;
+    }
+
+    // Método para obtener la instancia del servicio API
+    public static WeatherApiService getWeatherApiService() {
+        return getRetrofitInstance().create(WeatherApiService.class);
     }
 }

@@ -1,25 +1,36 @@
 package com.example.iot_lab4_20206331.data.api;
 
-import com.example.iot_lab4_20206331.data.model.Location;
-import com.example.iot_lab4_20206331.data.model.Forecast;
-import com.example.iot_lab4_20206331.data.model.SportEvent;
-
-import java.util.List;
+import com.example.iot_lab4_20206331.data.model.ForecastResponse;
+import com.example.iot_lab4_20206331.data.model.LocationResponse;
+import com.example.iot_lab4_20206331.data.model.WeatherResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
+import java.util.List;
+
 public interface WeatherApiService {
-    // Método para obtener locaciones
-    @GET("v1/search.json")
-    Call<List<Location>> getLocations(@Query("key") String apiKey, @Query("q") String location);
 
-    // Método para obtener pronósticos
-    @GET("v1/forecast.json")
-    Call<Forecast> getForecast(@Query("key") String apiKey, @Query("q") String locationId, @Query("days") int days);
+    // Endpoint 1: Búsqueda de locaciones
+    @GET("search.json")
+    Call<List<LocationResponse>> searchLocation(
+            @Query("key") String apiKey,
+            @Query("q") String locationQuery
+    );
 
-    // Método para obtener eventos deportivos
-    @GET("v1/sports.json")
-    Call<List<SportEvent>> getSportsEvents(@Query("key") String apiKey, @Query("q") String location);
+    // Endpoint 2: Obtener clima actual
+    @GET("current.json")
+    Call<WeatherResponse> getCurrentWeather(
+            @Query("key") String apiKey,
+            @Query("q") String locationQuery
+    );
+
+    // Endpoint 3: Obtener pronóstico
+    @GET("forecast.json")
+    Call<ForecastResponse> getForecast(
+            @Query("key") String apiKey,      // Clave de la API
+            // Ubicación para el pronóstico
+            @Query("days") int days          // Número de días del pronóstico
+    );
 }
