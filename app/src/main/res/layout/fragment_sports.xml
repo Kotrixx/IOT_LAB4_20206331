@@ -1,80 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.ForecastFragment$SportsFragment">
+    tools:context=".ui.fragments.SportsFragment">
 
-    <!-- AppBar for Future Forecast -->
-    <androidx.appcompat.widget.Toolbar
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0288D1"
-        android:elevation="4dp">
-        <TextView
-            android:id="@+id/future_forecast_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pronóstico Futuro"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"/>
-    </androidx.appcompat.widget.Toolbar>
-
-    <!-- Search Fields for Future Forecast -->
-    <TextInputLayout
-        android:id="@+id/future_forecast_location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:background="#0288D1"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Eventos Deportivos"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:padding="12dp"/>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Barra de búsqueda -->
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-        <TextInputEditText
-            android:id="@+id/future_forecast_location_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="idLocación"
-            android:inputType="text"/>
-    </TextInputLayout>
 
-    <TextInputLayout
-        android:id="@+id/future_forecast_day"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/future_forecast_location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <TextInputEditText
-            android:id="@+id/future_forecast_day_interes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Día de Interés"
-            android:inputType="date"/>
-    </TextInputLayout>
+        <EditText
+            android:id="@+id/location_input"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:hint="Nombre del lugar"
+            android:background="@drawable/bg_search_field"
+            android:paddingHorizontal="16dp"
+            android:inputType="text"
+            android:textColor="#000"
+            android:textColorHint="#888" />
 
-    <Button
-        android:id="@+id/search_future_forecast_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Buscar"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/future_forecast_day"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="#0288D1"
-        android:textColor="@android:color/white"/>
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Buscar"
+            android:layout_marginStart="8dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#673AB7"/>
+    </LinearLayout>
 
-    <!-- RecyclerView to display future forecast results -->
+    <!-- RecyclerView de deportes -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewFutureForecast"
+        android:id="@+id/recyclerViewSports"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/search_future_forecast_button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="12dp"
+        android:background="#F5F5F5"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintBottom_toTopOf="@id/empty_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Vista vacía si no hay resultados -->
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No se encontraron partidos de fútbol"
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewSports"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

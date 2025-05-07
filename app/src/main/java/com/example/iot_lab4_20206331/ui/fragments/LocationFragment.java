@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 
@@ -28,13 +29,14 @@ public class LocationFragment extends Fragment {
     private WeatherRepository weatherRepository;
     private EditText locationEditText;
     private Button searchButton;
-
+    private TextView emptyView;
+    private RecyclerView recyclerView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_location, container, false);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.recyclerViewLocation);
+        recyclerView = rootView.findViewById(R.id.recyclerViewLocation);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         locationList = new ArrayList<>();
@@ -47,6 +49,7 @@ public class LocationFragment extends Fragment {
         weatherRepository = new WeatherRepository();
         locationEditText = rootView.findViewById(R.id.location_edit_text);
         searchButton = rootView.findViewById(R.id.search_button);
+        emptyView = rootView.findViewById(R.id.empty_view); // Asegúrate de que esté en el layout
 
         searchButton.setOnClickListener(v -> {
             String locationQuery = locationEditText.getText().toString().trim();
@@ -69,23 +72,31 @@ public class LocationFragment extends Fragment {
             public void onSuccess(Object result) {
                 List<LocationResponse> locations = (List<LocationResponse>) result;
 
-                // 👇 Log para verificar cuántas locaciones llegan
-                Log.d("LocationFragment", "Cantidad de locaciones recibidas: " + locations.size());
+                locationList.clear();
 
                 if (locations != null && !locations.isEmpty()) {
-                    locationList.clear();
                     locationList.addAll(locations);
-                    locationAdapter.setLocationList(locationList);  // 👈 Esto actualiza la vista
+                    locationAdapter.setLocationList(locationList);
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(getContext(), "No se encontraron locaciones", Toast.LENGTH_SHORT).show();
+                    // No se encontraron datos
+                    recyclerView.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Toast.makeText(getContext(), "Error en la consulta: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                // También puedes mostrar el mensaje vacío si falla
+                recyclerView.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
             }
         });
     }
+
 
 }

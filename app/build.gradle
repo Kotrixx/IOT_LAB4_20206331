@@ -41,9 +41,9 @@ dependencies {
     implementation libs.retrofit
     implementation libs.converter.gson
     implementation libs.okhttp
-    //noinspection UseTomlInstead
-    implementation 'androidx.navigation:navigation-fragment:2.8.9'
-    implementation 'androidx.navigation:navigation-ui:2.8.9'
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
     implementation libs.material.v150  // o la última versión disponible
+    implementation 'com.google.android.material:material:1.3.0' // o más reciente
 
 }
