@@ -2,7 +2,6 @@ package com.example.iot_lab4_20206331.data.api;
 
 import com.example.iot_lab4_20206331.data.model.ForecastResponse;
 import com.example.iot_lab4_20206331.data.model.LocationResponse;
-import com.example.iot_lab4_20206331.data.model.WeatherResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -19,18 +18,18 @@ public interface WeatherApiService {
             @Query("q") String locationQuery
     );
 
-    // Endpoint 2: Obtener clima actual
-    @GET("current.json")
-    Call<WeatherResponse> getCurrentWeather(
+    @GET("sports.json")
+    Call<com.example.iot_lab4_20206331.data.model.SportsResponse> getSports(
             @Query("key") String apiKey,
-            @Query("q") String locationQuery
+            @Query("q") String location
     );
+
 
     // Endpoint 3: Obtener pronóstico
     @GET("forecast.json")
     Call<ForecastResponse> getForecast(
-            @Query("key") String apiKey,      // Clave de la API
-            // Ubicación para el pronóstico
-            @Query("days") int days          // Número de días del pronóstico
+            @Query("key") String apiKey,
+            @Query("q") String query,       // Aquí se espera "id:{locationId}"
+            @Query("days") int days         // Número de días de pronóstico
     );
 }

@@ -9,41 +9,55 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iot_lab4_20206331.R;
 import com.example.iot_lab4_20206331.data.model.Sport;
+import com.example.iot_lab4_20206331.data.model.SportsResponse;
 
 import java.util.List;
 
-public class SportsAdapter extends RecyclerView.Adapter<SportsAdapter.SportsViewHolder> {
+public class SportsAdapter extends RecyclerView.Adapter<SportsAdapter.ViewHolder> {
 
-    private List<Sport> sportsList;
+    private List<SportsResponse.Football> events;
 
-    public SportsAdapter(List<Sport> sportsList) {
-        this.sportsList = sportsList;
+    public SportsAdapter(List<SportsResponse.Football> events) {
+        this.events = events;
+    }
+
+    public void setEvents(List<SportsResponse.Football> events) {
+        this.events = events;
+        notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView stadium, match, tournament, start, country;
+
+        public ViewHolder(View view) {
+            super(view);
+            stadium = view.findViewById(R.id.tv_stadium);
+            match = view.findViewById(R.id.tv_match);
+            tournament = view.findViewById(R.id.tv_tournament);
+            start = view.findViewById(R.id.tv_start);
+            country = view.findViewById(R.id.tv_country);
+        }
     }
 
     @Override
-    public SportsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_sport, parent, false);
-        return new SportsViewHolder(itemView);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_sports, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(SportsViewHolder holder, int position) {
-        Sport sport = sportsList.get(position);
-        holder.sportName.setText(sport.getName());
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        SportsResponse.Football event = events.get(position);
+        holder.stadium.setText("Estadio: " + event.getStadium());
+        holder.match.setText("Partido: " + event.getMatch());
+        holder.tournament.setText("Torneo: " + event.getTournament());
+        holder.start.setText("Hora: " + event.getStart());
+        holder.country.setText("País: " + event.getCountry());
     }
 
     @Override
     public int getItemCount() {
-        return sportsList.size();
-    }
-
-    public static class SportsViewHolder extends RecyclerView.ViewHolder {
-        public TextView sportName;
-
-        public SportsViewHolder(View view) {
-            super(view);
-            sportName = view.findViewById(R.id.sportName);
-        }
+        return events != null ? events.size() : 0;
     }
 }

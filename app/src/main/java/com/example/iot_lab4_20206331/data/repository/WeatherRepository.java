@@ -3,10 +3,14 @@ package com.example.iot_lab4_20206331.data.repository;
 import com.example.iot_lab4_20206331.data.api.RetrofitClient;
 import com.example.iot_lab4_20206331.data.api.WeatherApiService;
 import com.example.iot_lab4_20206331.data.model.ForecastResponse;
+import com.example.iot_lab4_20206331.data.model.SportsResponse;
 import com.example.iot_lab4_20206331.data.model.LocationResponse;
-import com.example.iot_lab4_20206331.data.model.WeatherResponse;
 
 import java.util.List;
+import retrofit2.Callback;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class WeatherRepository {
 
@@ -52,28 +56,27 @@ public class WeatherRepository {
     }
 
 
-    // Método para obtener el clima actual
-    public void getCurrentWeather(String apiKey, String locationQuery, OnWeatherDataReceived callback) {
-        weatherApiService.getCurrentWeather(apiKey, locationQuery).enqueue(new retrofit2.Callback<WeatherResponse>() {
+    public void getSports(String apiKey, String location, OnWeatherDataReceived callback) {
+        weatherApiService.getSports(apiKey, location).enqueue(new Callback<SportsResponse>() {
             @Override
-            public void onResponse(retrofit2.Call<WeatherResponse> call, retrofit2.Response<WeatherResponse> response) {
+            public void onResponse(Call<SportsResponse> call, Response<SportsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onFailure(new Exception("Error al obtener el clima actual"));
+                    callback.onFailure(new Exception("Error al obtener eventos deportivos"));
                 }
             }
 
             @Override
-            public void onFailure(retrofit2.Call<WeatherResponse> call, Throwable t) {
+            public void onFailure(Call<SportsResponse> call, Throwable t) {
                 callback.onFailure(t);
             }
         });
     }
 
-    // Método para obtener el pronóstico
-    public void getForecast(String apiKey, int days, OnWeatherDataReceived callback) {
-        weatherApiService.getForecast(apiKey, days).enqueue(new retrofit2.Callback<ForecastResponse>() {
+
+    public void getForecast(String apiKey, String query, int days, OnWeatherDataReceived callback) {
+        weatherApiService.getForecast(apiKey, query, days).enqueue(new retrofit2.Callback<ForecastResponse>() {
             @Override
             public void onResponse(retrofit2.Call<ForecastResponse> call, retrofit2.Response<ForecastResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

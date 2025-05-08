@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
+    android:fitsSystemWindows="true"
     tools:context=".ui.fragments.ForecastFragment">
 
-    <!-- Toolbar -->
+    <!-- Barra superior -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0288D1"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
 
         <TextView
             android:id="@+id/custom_toolbar_title"
@@ -26,81 +26,113 @@
             android:text="Pronóstico del Clima"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:padding="12dp"/>
+            android:padding="12dp" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <!-- Contenedor búsqueda -->
     <LinearLayout
-        android:id="@+id/search_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="70dp"
+        android:paddingBottom="16dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
-        <EditText
-            android:id="@+id/id_location_input"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:hint="idLocación"
-            android:background="@drawable/bg_search_field"
-            android:paddingHorizontal="16dp"
-            android:inputType="number"
-            android:textColor="#000"
-            android:textColorHint="#888" />
+        <!-- Buscador dentro de CardView -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/days_input"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:hint="#días Forecast"
-            android:background="@drawable/bg_search_field"
-            android:paddingHorizontal="16dp"
-            android:inputType="number"
-            android:textColor="#000"
-            android:textColorHint="#888"
-            android:layout_marginStart="8dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
 
-        <Button
-            android:id="@+id/forecast_search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="Buscar"
-            android:layout_marginStart="8dp"
-            android:textColor="@android:color/white"
-            android:backgroundTint="#673AB7"/>
+                <EditText
+                    android:id="@+id/id_location_input"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:hint="ID de locación"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="?android:attr/textColorHint" />
+
+                <EditText
+                    android:id="@+id/days_input"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:hint="# Días"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="?android:attr/textColorHint" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/forecast_search_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Buscar"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:layout_marginStart="8dp"
+                    app:cornerRadius="16dp"
+                    android:backgroundTint="?attr/colorPrimary" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Contenedor de resultados -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <!-- RecyclerView de resultados -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewForecast"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                />
+
+            <!-- Vista vacía -->
+            <LinearLayout
+                android:id="@+id/empty_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:src="@drawable/ic_search_empty"
+                    android:alpha="0.5"
+                    android:contentDescription="Sin resultados" />
+
+                <TextView
+                    android:id="@+id/empty_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No se encontraron pronósticos"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center" />
+            </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
-
-    <!-- RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewForecast"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="12dp"
-        android:background="#F5F5F5"
-        app:layout_constraintTop_toBottomOf="@id/search_container"
-        app:layout_constraintBottom_toTopOf="@id/empty_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Mensaje si no hay resultados -->
-    <TextView
-        android:id="@+id/empty_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No se encontraron pronósticos"
-        android:textSize="16sp"
-        android:textColor="#666666"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/recyclerViewForecast"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

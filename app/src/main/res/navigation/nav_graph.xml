@@ -21,7 +21,7 @@
     <!-- SportsFragment -->
     <fragment
         android:id="@+id/sportsFragment"
-        android:name="com.example.iot_lab4_20206331.ui.fragments.ForecastFragment$SportsFragment"
+        android:name="com.example.iot_lab4_20206331.ui.fragments.SportsFragment"
         android:label="Sports"
         android:layout="@layout/fragment_sports" />
 </navigation>

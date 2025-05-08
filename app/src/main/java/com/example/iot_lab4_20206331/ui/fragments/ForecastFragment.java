@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +19,7 @@ import com.example.iot_lab4_20206331.data.model.ForecastResponse;
 import com.example.iot_lab4_20206331.data.model.Forecastday;
 import com.example.iot_lab4_20206331.ui.adapter.ForecastAdapter;
 import com.example.iot_lab4_20206331.data.repository.WeatherRepository;
+import com.example.iot_lab4_20206331.data.sensor.AccelerometerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,52 +29,119 @@ public class ForecastFragment extends Fragment {
     private RecyclerView recyclerView;
     private ForecastAdapter forecastAdapter;
     private List<Forecastday> forecastList;
+
     private WeatherRepository weatherRepository;
+
+    private EditText idLocationInput;
+    private EditText daysInput;
+    private Button searchButton;
+    private LinearLayout emptyContainer;
+
+    private AccelerometerManager accelerometerManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
-        // Configura el RecyclerView
         recyclerView = rootView.findViewById(R.id.recyclerViewForecast);
+        idLocationInput = rootView.findViewById(R.id.id_location_input);
+        daysInput = rootView.findViewById(R.id.days_input);
+        searchButton = rootView.findViewById(R.id.forecast_search_button);
+        emptyContainer = rootView.findViewById(R.id.empty_container);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Inicializa la lista de pronósticos
         forecastList = new ArrayList<>();
-
-        // Configura el Adapter
         forecastAdapter = new ForecastAdapter(forecastList);
         recyclerView.setAdapter(forecastAdapter);
 
-        // Inicializa el WeatherRepository
         weatherRepository = new WeatherRepository();
 
-        // Llama a la API para obtener los pronósticos
-        fetchForecastData("Buenos Aires", 7);  // Ejemplo de ubicación y días
+        // Inicializar acelerómetro
+        accelerometerManager = new AccelerometerManager(requireContext(), this::showConfirmationDialog);
+
+        searchButton.setOnClickListener(v -> {
+            String idText = idLocationInput.getText().toString().trim();
+            String daysText = daysInput.getText().toString().trim();
+
+            if (idText.isEmpty() || daysText.isEmpty()) {
+                Toast.makeText(getContext(), "Por favor completa ambos campos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int locationId;
+            int days;
+
+            try {
+                locationId = Integer.parseInt(idText);
+                days = Integer.parseInt(daysText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "IDs y días deben ser números válidos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            fetchForecastData(String.valueOf(locationId), days);
+        });
 
         return rootView;
     }
 
-    // Método para obtener los datos de pronóstico desde la API usando el repositorio
-    private void fetchForecastData(String location, int days) {
-        String apiKey = "ec24b1c6dd8a4d528c1205500250305";  // Tu clave de API
+    @Override
+    public void onResume() {
+        super.onResume();
+        accelerometerManager.register();
+    }
 
-        weatherRepository.getForecast(apiKey, days, new WeatherRepository.OnWeatherDataReceived() {
+    @Override
+    public void onPause() {
+        super.onPause();
+        accelerometerManager.unregister();
+    }
+
+    private void showConfirmationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("¿Eliminar pronósticos?")
+                .setMessage("¿Deseas eliminar los últimos pronósticos mostrados?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    forecastList.clear();
+                    forecastAdapter.notifyDataSetChanged();
+                    Toast.makeText(getContext(), "Pronósticos eliminados", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void fetchForecastData(String location, int days) {
+        String apiKey = "ec24b1c6dd8a4d528c1205500250305";
+        String query = "id:" + location;
+
+        weatherRepository.getForecast(apiKey, query, days, new WeatherRepository.OnWeatherDataReceived() {
             @Override
             public void onSuccess(Object result) {
                 ForecastResponse forecastResponse = (ForecastResponse) result;
-                if (forecastResponse != null && forecastResponse.getForecast().getForecastday().size() > 0) {
-                    forecastList.clear();
+
+                forecastList.clear();
+
+                if (forecastResponse != null &&
+                        forecastResponse.getForecast() != null &&
+                        forecastResponse.getForecast().getForecastday() != null &&
+                        !forecastResponse.getForecast().getForecastday().isEmpty()) {
+
                     forecastList.addAll(forecastResponse.getForecast().getForecastday());
                     forecastAdapter.notifyDataSetChanged();
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyContainer.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(getContext(), "No se encontraron datos de pronóstico", Toast.LENGTH_SHORT).show();
+                    recyclerView.setVisibility(View.GONE);
+                    emptyContainer.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                recyclerView.setVisibility(View.GONE);
+                emptyContainer.setVisibility(View.VISIBLE);
                 Toast.makeText(getContext(), "Error al obtener pronóstico: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

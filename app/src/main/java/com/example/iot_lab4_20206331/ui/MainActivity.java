@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         enterButton.setOnClickListener(v -> {
             if (isConnectedToInternet()) {
                 startActivity(new Intent(MainActivity.this, AppActivity.class));
-                finish();
             } else {
                 // Si no hay conexión, mostrar el dialog
                 showNoInternetDialog();
