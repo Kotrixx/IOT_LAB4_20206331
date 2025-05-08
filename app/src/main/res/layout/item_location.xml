@@ -59,6 +59,19 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_select"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Seleccionar"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="10sp"
+                app:cornerRadius="16dp"
+                android:backgroundTint="?attr/colorPrimary"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="0dp"
+                android:minHeight="0dp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

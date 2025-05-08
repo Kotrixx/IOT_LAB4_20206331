@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.ViewFlipper;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,7 +24,7 @@ import com.example.iot_lab4_20206331.data.repository.WeatherRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocationFragment extends Fragment {
+public class LocationFragment extends Fragment implements LocationAdapter.OnLocationSelectListener {
 
     private EditText locationEditText;
     private Button searchButton;
@@ -52,7 +53,7 @@ public class LocationFragment extends Fragment {
         // Configuración de RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         locationList = new ArrayList<>();
-        locationAdapter = new LocationAdapter(locationList);
+        locationAdapter = new LocationAdapter(locationList, this);
         recyclerView.setAdapter(locationAdapter);
 
         // Inicialización del repositorio
@@ -103,5 +104,14 @@ public class LocationFragment extends Fragment {
                 resultsContainer.setDisplayedChild(2); // Mostrar vista vacía
             }
         });
+    }
+
+    @Override
+    public void onLocationSelected(LocationResponse location) {
+        Bundle bundle = new Bundle();
+        bundle.putString("location_id", String.valueOf(location.getIdLocation()));
+        bundle.putString("location_name", location.getName());
+
+        Navigation.findNavController(requireView()).navigate(R.id.forecastFragment, bundle);
     }
 }

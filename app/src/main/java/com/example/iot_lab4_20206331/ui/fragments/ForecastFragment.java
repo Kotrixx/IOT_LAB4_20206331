@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.iot_lab4_20206331.R;
 import com.example.iot_lab4_20206331.data.model.ForecastResponse;
 import com.example.iot_lab4_20206331.data.model.Forecastday;
-import com.example.iot_lab4_20206331.ui.adapter.ForecastAdapter;
 import com.example.iot_lab4_20206331.data.repository.WeatherRepository;
 import com.example.iot_lab4_20206331.data.sensor.AccelerometerManager;
+import com.example.iot_lab4_20206331.ui.adapter.ForecastAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,9 +56,16 @@ public class ForecastFragment extends Fragment {
         recyclerView.setAdapter(forecastAdapter);
 
         weatherRepository = new WeatherRepository();
-
-        // Inicializar acelerómetro
         accelerometerManager = new AccelerometerManager(requireContext(), this::showConfirmationDialog);
+
+        // ⚠️ Si se recibe un ID desde LocationFragment, llenarlo automáticamente
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("location_id")) {
+            String locationId = args.getString("location_id");
+            idLocationInput.setText(locationId);
+            daysInput.setText("14"); // default
+            fetchForecastData(locationId, 14); // auto-consulta
+        }
 
         searchButton.setOnClickListener(v -> {
             String idText = idLocationInput.getText().toString().trim();
@@ -69,18 +76,13 @@ public class ForecastFragment extends Fragment {
                 return;
             }
 
-            int locationId;
-            int days;
-
             try {
-                locationId = Integer.parseInt(idText);
-                days = Integer.parseInt(daysText);
+                int locationId = Integer.parseInt(idText);
+                int days = Integer.parseInt(daysText);
+                fetchForecastData(String.valueOf(locationId), days);
             } catch (NumberFormatException e) {
                 Toast.makeText(getContext(), "IDs y días deben ser números válidos", Toast.LENGTH_SHORT).show();
-                return;
             }
-
-            fetchForecastData(String.valueOf(locationId), days);
         });
 
         return rootView;
@@ -111,15 +113,14 @@ public class ForecastFragment extends Fragment {
                 .show();
     }
 
-    private void fetchForecastData(String location, int days) {
+    private void fetchForecastData(String locationId, int days) {
         String apiKey = "ec24b1c6dd8a4d528c1205500250305";
-        String query = "id:" + location;
+        String query = "id:" + locationId;
 
         weatherRepository.getForecast(apiKey, query, days, new WeatherRepository.OnWeatherDataReceived() {
             @Override
             public void onSuccess(Object result) {
                 ForecastResponse forecastResponse = (ForecastResponse) result;
-
                 forecastList.clear();
 
                 if (forecastResponse != null &&
